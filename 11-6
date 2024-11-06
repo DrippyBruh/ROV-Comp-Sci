@@ -1,0 +1,55 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial BTSerial(0, 1);   // RX | TX
+
+int dataOut;
+int dataIn;
+
+void setup() {
+  pinMode(9, OUTPUT);    /* this pin will pull the HC-05 pin 34 (KEY pin) HIGH to switch module to AT mode */
+  digitalWrite(9, HIGH);
+
+  pinMode(13, OUTPUT);  /* pin 13 is the left motor
+  pinMode(12, OUTPUT);  /* pin 12 is the right motor
+  pinMode(11, OUTPUT);  /* pin 11 is the spool motor
+
+  Serial.begin(38400);
+  Serial.println("Enter AT Commands:");
+  BTSerial.begin(38400);  // HC-05 default speed in AT command mode
+}
+
+void loop() {
+
+//The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HC-05
+  if (Serial.available())           // Keep reading from Arduino Serial Monitor 
+    dataOut = Serial.read();
+    BTSerial.write(Serial.read());  // and send to HC-05
+
+//The code below allows for commands and messages to be sent from HC-05 -> COMPUTER (serial monitor)    
+  if (BTSerial.available())         // Keep reading from HC-05 and send to Arduino 
+    dataIn = BTSerial.read();
+    dataOut = dataIn;
+    Serial.write(BTSerial.read());  // Serial Monitor
+
+  if (dataOut == 'A')
+    digitalWrite(13, HIGH);
+    digitalWrite(12, HIGH);
+  
+  if (dataOut == 'B')
+    digitalWrite(13, LOW);
+    digitalWrite(12, LOW);
+
+  if (dataOut == 'C')
+    digitalWrite(13, HIGH);
+    digitalWrite(12, LOW);
+  
+  if (dataOut == 'D')
+    digitalWrite(13, LOW);
+    digitalWrite(12, HIGH);
+
+  if (dataOut == 'E')
+    analogWrite(11, -255);
+
+  if (dataOut == 'F')
+    analogWrite(11, 255);
+}
