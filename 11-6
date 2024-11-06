@@ -52,4 +52,7 @@ void loop() {
 
   if (dataOut == 'F')
     analogWrite(11, 255);
+
+  if (dataOut == 'G')
+    analogWrite(10, 0);
 }
