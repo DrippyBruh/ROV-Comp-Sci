@@ -11,7 +11,8 @@ void setup() {
 
   pinMode(13, OUTPUT);  /* pin 13 is the left motor
   pinMode(12, OUTPUT);  /* pin 12 is the right motor
-  pinMode(11, OUTPUT);  /* pin 11 is the spool motor
+  pinMode(11, OUTPUT);  /* pin 11 is the spool motor for forward
+  pinMode(10, OUTPUT):  /* pin 10 is the spool motor for reverse
 
   Serial.begin(38400);
   Serial.println("Enter AT Commands:");
@@ -48,11 +49,14 @@ void loop() {
     digitalWrite(12, HIGH);
 
   if (dataOut == 'E')
-    analogWrite(11, -255);
+    analogWrite(11, 0);
 
   if (dataOut == 'F')
     analogWrite(11, 255);
 
   if (dataOut == 'G')
-    analogWrite(10, 0);
+    analogWrite(10, 255);
+
+  if (dataOut == 'H')
+    analogWrite(10, 255);
 }
