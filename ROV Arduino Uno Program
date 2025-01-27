@@ -16,9 +16,9 @@ void setup() {
   pinMode(9, OUTPUT);   /* pin 9 is the claw motor circuit to open
   pinMode(8 OUTPUT);    /* pin 8 is the claw motor circuit to close
 
-  Serial.begin(38400);
+  Serial.begin(9600);
   Serial.println("Enter AT Commands:");
-  BTSerial.begin(38400);  // HC-05 default speed in AT command mode
+  BTSerial.begin(9600);  // HM-10 default speed in AT command mode
 }
 
 void loop() {
@@ -26,10 +26,10 @@ void loop() {
 //The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HC-05
   if (Serial.available())           // Keep reading from Arduino Serial Monitor 
     dataOut = Serial.read();
-    BTSerial.write(Serial.read());  // and send to HC-05
+    BTSerial.write(Serial.read());  // and send to HM-10
 
-//The code below allows for commands and messages to be sent from HC-05 -> COMPUTER (serial monitor)    
-  if (BTSerial.available())         // Keep reading from HC-05 and send to Arduino 
+//The code below allows for commands and messages to be sent from HM-10 -> COMPUTER (serial monitor)    
+  if (BTSerial.available())         // Keep reading from HM-10 and send to Arduino 
     dataIn = BTSerial.read();
     dataOut = dataIn;
     Serial.write(BTSerial.read());  // Serial Monitor
