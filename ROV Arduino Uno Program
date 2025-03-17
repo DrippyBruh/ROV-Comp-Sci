@@ -1,76 +1,54 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial BTSerial(0, 1);   // RX | TX
+SoftwareSerial BTSerial(2, 3);   // RX | TX
 
-int dataOut;
 int dataIn;
 
 void setup() {
-  pinMode(9, OUTPUT);    /* this pin (pin 9) will connect to the HM-10 pin 34 (KEY pin) setting it HIGH to switch module to AT mode */
-  digitalWrite(9, HIGH);
 
-  pinMode(13, OUTPUT);  /* pin 13 is the left motor
-  pinMode(12, OUTPUT);  /* pin 12 is the right motor
-  pinMode(11, OUTPUT);  /* pin 11 is the spool motor circuit for forward
-  pinMode(10, OUTPUT);  /* pin 10 is the spool motor circuit for reverse
-  pinMode(9, OUTPUT);   /* pin 9 is the claw motor circuit to open
-  pinMode(8 OUTPUT);    /* pin 8 is the claw motor circuit to close
+  pinMode(5, OUTPUT);     //Sets claw servo open as pin 5 
+  digitalWrite(5, LOW);   //Defaults to off
+  pinMode(6, OUTPUT);    //Sets claw servo close as pin 6
+  digitalWrite(6, LOW);  //Defaults to off
+  pinMode(8, OUTPUT);     //Sets right thruster as pin 8 
+  digitalWrite(8, LOW);   //Defaults the thruster to off
+  pinMode(10, OUTPUT);    //Sets left thruster as pin 10 
+  digitalWrite(10, LOW);  //Defaults the thruster to off
+  pinMode(11, OUTPUT);    //Sets spool reel in to pin 11
+  digitalWrite(11, LOW);  //Defaults to off
+  pinMode(12, OUTPUT);    //Sets spool release to pin 12
+  digitalWrite(12, LOW);  //Defaults to off
 
   Serial.begin(9600);
   Serial.println("Enter AT Commands:");
-  BTSerial.begin(9600);  // HM-10 default speed in AT command mode
+  //BTSerial.begin(9600);  // HM-10 default speed in AT command mode
 }
 
 void loop() {
 
 //The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HC-05
-  if (Serial.available())           // Keep reading from Arduino Serial Monitor 
-    dataOut = Serial.read();
-    BTSerial.write(Serial.read());  // and send to HM-10
+  //if (BTSerial.available() > 0)     //For Bluetooth
+  if(Serial.available() > 0) 
+  {    // Keep reading from Arduino Serial Monitor 
+   //dataIn = BTSerial.read();       //For Bluetooth
+    dataIn = Serial.read();
+    Serial.println(dataIn);
 
-//The code below allows for commands and messages to be sent from HM-10 -> COMPUTER (serial monitor)    
-  if (BTSerial.available())         // Keep reading from HM-10 and send to Arduino 
-    dataIn = BTSerial.read();
-    dataOut = dataIn;
-    Serial.write(BTSerial.read());  // Serial Monitor
+//The code below allows for commands and messages to be sent from HC-05 -> COMPUTER (serial monitor)    
+   // Serial.write(BTSerial.read());  // Serial Monitor
+    
+   if (dataIn == 'A')
+    digitalWrite(11, HIGH);
 
-  if (dataOut == 'A')
-    digitalWrite(13, HIGH);
-    digitalWrite(12, HIGH);
-  
-  if (dataOut == 'B')
-    digitalWrite(13, LOW);
-    digitalWrite(12, LOW);
+   if (dataIn == 'B')
+    digitalWrite(8, HIGH); 
 
-  if (dataOut == 'C')
-    digitalWrite(13, HIGH);
-    digitalWrite(12, LOW);
-  
-  if (dataOut == 'D')
-    digitalWrite(13, LOW);
-    digitalWrite(12, HIGH);
+   if (dataIn == 'C')
+    digitalWrite(11, LOW); 
 
-  if (dataOut == 'E')
-    analogWrite(11, 0);
+   if (dataIn == 'D')
+    digitalWrite(8, LOW); 
 
-  if (dataOut == 'F')
-    analogWrite(11, 255);
-
-  if (dataOut == 'G')
-    analogWrite(10, 0);
-
-  if (dataOut == 'H')
-    analogWrite(10, 255);
-
-  if (dataOut == 'I')
-    analogWrite(9, 0);
-
-  if (dataOut == 'J')
-    analogWrite(9, 255);
-
-  if (dataOut == 'K')
-    digitalWrite(8, HIGH);
-
-  if (dataOut == 'L')
-    digitalWrite(8, LOW);
+// More commands will be added for testing as the circuits are created and integrated
+}
 }
