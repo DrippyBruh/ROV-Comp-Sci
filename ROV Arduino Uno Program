@@ -1,18 +1,26 @@
 #include <SoftwareSerial.h>
+#include <Servo.h>
+
+Servo claw;
 
 SoftwareSerial BTSerial(2, 3);   // RX | TX
 
 int dataIn;
-int motorRightF = 5;    //Sets right motor forward as pin 5
-int motorRightR = 6;    //Sets right motor reverse as pin 6
-int motorLeftF = 9;     //Sets left motor forward as pin 9
-int motorLeftR = 10;    //Sets left motor reverse as pin 10
-int motorClawO = 2;     //Sets claw servo open as pin 2 
-int motorClawC = 4;     //Sets claw servo open as pin 4
-int motorSpoolU = 7;    //Sets spool reel in as pin 7
-int motorSpoolD = 8;    //Sets spool out as pin 8
+int pos = 0;
+
+int motorRightF = 9;    //Sets right motor forward as pin 9
+int motorRightR = 10;    //Sets right motor reverse as pin 10
+int motorLeftF = 5;     //Sets left motor forward as pin 5
+int motorLeftR = 6;    //Sets left motor reverse as pin 6
+int motorSpoolU = 8;    //Sets spool reel in as pin 8
+int motorSpoolD = 7;    //Sets spool out as pin 7
 
 void setup() {
+  claw.attach(4);
+  for (pos = 30; pos >= -10; pos -= 1) { // goes from 180 degrees to 0 degrees
+    claw.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15 ms for the servo to reach the position
+  }
 //This section designates each pin as output and defaults each motor to an "off" state
 
   pinMode(motorRightF, OUTPUT);    
@@ -23,40 +31,32 @@ void setup() {
   digitalWrite(motorLeftF, LOW);   
   pinMode(motorLeftR, OUTPUT); 
   digitalWrite(motorLeftR, LOW); 
-  pinMode(motorClawO, OUTPUT); 
-  digitalWrite(motorClawO, LOW); 
-  pinMode(motorClawC, OUTPUT); 
-  digitalWrite(motorClawC, LOW);
   pinMode(motorSpoolU, OUTPUT);
   digitalWrite(motorSpoolU, LOW);
   pinMode(motorSpoolD, OUTPUT);
   digitalWrite(motorSpoolD, LOW);
 
-  Serial.begin(9600);
-  Serial.println("Enter AT Commands:");
-  //BTSerial.begin(9600);  // HM-10 default speed in AT command mode
+  
+  BTSerial.begin(9600);  // HM-10 default speed in AT command mode
+  BTSerial.println("Enter AT Commands:");
 }
 
 void loop() {
 
 //The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HM-10
-  //if (BTSerial.available() > 0)     //For Bluetooth
-  if(Serial.available() > 0) 
+  if (BTSerial.available() > 0)     //For Bluetooth
   {    // Keep reading from Arduino Serial Monitor 
-   //dataIn = BTSerial.read();       //For Bluetooth
-    dataIn = Serial.read();
+    dataIn = BTSerial.read();       //For Bluetooth
     Serial.println(dataIn);
 
 //The code below allows for commands and messages to be sent from HM-10 -> COMPUTER (serial monitor)    
-   // Serial.write(BTSerial.read());  // Serial Monitor
+   Serial.write(BTSerial.read());  // Serial Monitor
     
   if (dataIn == 'A')
     digitalWrite(motorRightF, HIGH);
-    digitalWrite(motorRightR, LOW);
 
   if (dataIn == 'B')
     digitalWrite(motorLeftF, HIGH);
-    digitalWrite(motorLeftR, LOW);
 
   if (dataIn == 'C')
     digitalWrite(motorRightF, LOW); 
@@ -66,11 +66,9 @@ void loop() {
 
   if (dataIn == 'E')
     digitalWrite(motorRightR, HIGH);
-    digitalWrite(motorRightF, LOW);
 
   if (dataIn == 'F')
     digitalWrite(motorLeftR, HIGH); 
-    digitalWrite(motorLeftF, LOW);
 
   if (dataIn == 'G')
     digitalWrite(motorRightR, LOW); 
@@ -79,27 +77,28 @@ void loop() {
     digitalWrite(motorLeftR, LOW);
 
   if (dataIn == 'I')
-    digitalWrite(motorClawO, HIGH);
+    for (pos = -10; pos <= 30; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    claw.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15 ms for the servo to reach the position
+  }
 
   if (dataIn == 'J')
-    digitalWrite(motorClawO, LOW);
+    for (pos = 30; pos >= -10; pos -= 1) { // goes from 180 degrees to 0 degrees
+    claw.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15 ms for the servo to reach the position
+  }
 
   if (dataIn == 'K')
-    digitalWrite(motorClawC, HIGH);
-
-  if (dataIn == 'L')
-    digitalWrite(motorClawC, LOW);
-
-  if (dataIn == 'M')
     digitalWrite(motorSpoolU, HIGH);
 
-  if (dataIn == 'N')
+  if (dataIn == 'L')
     digitalWrite(motorSpoolU, LOW);
   
-  if (dataIn == 'O')
+  if (dataIn == 'M')
     digitalWrite(motorSpoolD, HIGH);
 
-  if (dataIn == 'P')
+  if (dataIn == 'N')
     digitalWrite(motorSpoolD, LOW);
 }
 }
